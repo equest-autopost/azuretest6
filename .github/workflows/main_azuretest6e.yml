@@ -10,6 +10,7 @@ on:
   workflow_dispatch:
 
 env:
+  AZURE_WEBAPP_PACKAGE_PATH: .\aspnet-core\src\azuretest.Web.Host\published
   WORKING_DIRECTORY: .\aspnet-core\
 jobs:
   build:
@@ -24,17 +25,19 @@ jobs:
           dotnet-version: '6.0.x'
           include-prerelease: true
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
+      - name: Restore
+        run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
+      - name: Build
+        run: dotnet build "${{ env.WORKING_DIRECTORY }}" --no-restore
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish "${{ env.WORKING_DIRECTORY }}" -output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
   deploy:
     runs-on: windows-latest
@@ -48,6 +51,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: .net-app
+          path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -56,4 +60,4 @@ jobs:
           app-name: 'azuretest6e'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_0E32C24161774B30BF36E7BAD5AA29B5 }}
-          package: .
+          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
