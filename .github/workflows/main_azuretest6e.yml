@@ -9,6 +9,8 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  WORKING_DIRECTORY: .\aspnet-core\src\
 jobs:
   build:
     runs-on: windows-latest
