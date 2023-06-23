@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <AssetTargetFallback>$(AssetTargetFallback);portable-net45+win8+wp8+wpa81;</AssetTargetFallback>
+    <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <AssemblyName>azuretest6.Web.Host</AssemblyName>
     <OutputType>Exe</OutputType>
